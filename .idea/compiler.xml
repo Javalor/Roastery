@@ -6,8 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="roastery" />
         <module name="dependency-injection" />
+      </profile>
+      <profile name="Annotation profile for roastery" enabled="true">
+        <sourceOutputDir name="target/generated-sources" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processor name="io.javalor.componentscanner.annotation.IncludedInComponentScanAnnotationProcessor" />
+        <module name="roastery" />
       </profile>
     </annotationProcessing>
   </component>

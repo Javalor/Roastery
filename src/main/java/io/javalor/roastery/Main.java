@@ -1,8 +1,11 @@
 package io.javalor.roastery;
 
+import io.javalor.componentscanner.ComponentScanner;
+import io.javalor.componentscanner.annotation.IncludedInComponentScan;
 import io.javalor.roastery.annotation.AutoInjectd;
+import io.javalor.roastery.annotation.Qualifier;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 
 
@@ -11,14 +14,16 @@ public class Main {
 
 
     public static void main(String[] args) {
-        Set<Class<?>> classSet = new HashSet<>();
 
-        classSet.add(SetterInject.class);
-        classSet.add(Dependency.class);
+        ComponentScanner componentScanner = new ComponentScanner();
 
-        AutoInjector<ConstructorInject> constructorInjector = AutoInjector.forClass(ConstructorInject.class, classSet);
-        AutoInjector<SetterInject> setterInjector = AutoInjector.forClass(SetterInject.class, classSet);
-        AutoInjector<FieldInject> fieldInjector = AutoInjector.forClass(FieldInject.class, classSet);
+      Set<Class<?>> classSet = componentScanner.getScannedClass();
+
+
+        classSet.forEach(System.out::println);
+        DependencyInjector<ConstructorInject> constructorInjector = DependencyInjector.forClass(ConstructorInject.class, classSet);
+        DependencyInjector<SetterInject> setterInjector = DependencyInjector.forClass(SetterInject.class, classSet);
+        DependencyInjector<FieldInject> fieldInjector = DependencyInjector.forClass(FieldInject.class, classSet);
 
         try {
             ConstructorInject constructorInject = constructorInjector.getClassInstance();
@@ -37,15 +42,15 @@ public class Main {
 class ConstructorInject {
 
 
-    private Dependency dependency;
+    private IDependency dependency;
 
     @AutoInjectd
-    public ConstructorInject(Dependency dependency) {
+    public ConstructorInject(@Qualifier(Dependency.class) IDependency dependency) {
         setBeanB(dependency);
     }
 
 
-    private void setBeanB(Dependency dependency) {
+    private void setBeanB(IDependency dependency) {
         this.dependency = dependency;
     }
 
@@ -59,7 +64,7 @@ class ConstructorInject {
 class SetterInject {
 
 
-    private Dependency dependency;
+    private IDependency dependency;
 
 
     public SetterInject() {
@@ -67,7 +72,7 @@ class SetterInject {
     }
 
     @AutoInjectd
-    private void setBeanB(Dependency dependency) {
+    private void setBeanB(IDependency dependency) {
         this.dependency = dependency;
     }
 
@@ -80,7 +85,8 @@ class SetterInject {
 class FieldInject {
 
     @AutoInjectd
-    private Dependency dependency;
+    private IDependency sdede;
+
 
 
     public FieldInject() {
@@ -88,17 +94,22 @@ class FieldInject {
     }
 
 
-    private void setBeanB(Dependency dependency) {
-        this.dependency = dependency;
+    private void setBeanB(IDependency dependency) {
+        this.sdede = dependency;
     }
 
     public void say() {
         System.out.println("From "+this.getClass().getName());
-        dependency.say();
+        sdede.say();
     }
 }
 
-class Dependency {
+interface IDependency {
+    void say();
+}
+@IncludedInComponentScan
+@javax.ejb.Stateless
+class Dependency implements IDependency {
 
     public Dependency() {
     }

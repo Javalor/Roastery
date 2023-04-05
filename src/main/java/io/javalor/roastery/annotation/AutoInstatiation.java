@@ -4,8 +4,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface AutoInjectd {
-
+public @interface AutoInstatiation {
     String value() default "";
-
 }
